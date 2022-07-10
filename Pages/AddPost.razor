@@ -1,0 +1,60 @@
+@using BlazorBlog.Data.Model
+@using BlazorBlog.Data.Services
+
+@page "/addpost"
+
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager;
+
+<EditForm Model="@model" OnValidSubmit="@Submit_Post">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="row">
+        <label for="title" class="form-label">Blog Post Title:</label>
+        <InputText type="text" class="form-control" id="title" @bind-Value="@model.Title" />
+    </div>
+    <div class="row">
+        <label for="contents" class="form-label">Blog Post Title:</label>
+        <InputTextArea class="form-control" id="contents" @bind-Value="@model.Contents" />
+    </div>
+    <div class="row">
+        <label for="category" class="form-label">Category:</label>
+        <InputSelect id="category" @bind-Value="@model.CategoryId">
+            <option value="">Please select a category...</option>
+            @foreach (var cat in Categories)
+            {
+                <option value="@cat.CategoryId">@cat.CategoryName</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="row">
+        <button class="btn btn-primary gy-5 col-3" type="submit">Submit Post</button>
+    </div>
+</EditForm>
+
+@code {
+    private Post model = new Post();
+    private IEnumerable<Category> Categories = Array.Empty<Category>();
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+            Categories = await ApiService.GetCategoriesAsync();
+            StateHasChanged();
+        }
+    }
+    private async void Submit_Post()
+    {
+        var rnd = new Random();
+
+        model.Timestamp = DateTime.Now;
+        model.Id = rnd.Next(1, 99999);
+        if (model.CategoryId == 0 || model.CategoryId > 3)
+            model.CategoryId = 1;
+        model = await ApiService.AddPost(model);
+        NavigationManager.NavigateTo($"post/{model.Id}");
+    }
+
+}

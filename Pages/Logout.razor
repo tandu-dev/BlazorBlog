@@ -1,0 +1,11 @@
+@page "/logout"
+@inject IAuthenticationService AuthenticationService
+@inject IMessageService MessageService
+
+@code {
+    protected override async void OnInitialized()
+    {
+        await AuthenticationService.Logout();
+        MessageService.SendMessage("render");
+    }
+}

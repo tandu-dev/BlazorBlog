@@ -1,0 +1,16 @@
+﻿@page "/"
+@page "/{PageNumber:int}/{PageSize:int}"
+
+@using BlazorBlog.Components;
+
+<PageTitle>Blog Posts</PageTitle>
+
+<BlogPostList PageNumber=@PageNumber PageSize=@PageSize />
+
+@code {
+    [Parameter]
+    public int PageNumber {get; set;} 
+    [Parameter]
+    public int PageSize {get; set;} 
+
+}

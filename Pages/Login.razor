@@ -1,0 +1,41 @@
+@page "/login"
+
+@using BlazorBlog.Data.Model
+@using BlazorBlog.Data.Services
+
+@inject IApiService apiService
+@inject IAuthenticationService authenticationService
+@inject ILocalStorageService localStorageService
+@inject NavigationManager NavigationManager
+@inject IMessageService MessageService
+
+
+<EditForm Model="@model">
+    <div class="row">
+        <label for="userName" class="form-label">User Name:</label>
+        <InputText type="text" class="form-control" id="userName" @bind-Value="@model.UserName" />
+    </div> 
+    <div class="row">
+        <label for="password" class="form-label">Password:</label>
+        <InputText type="password" class="form-control" id="password" @bind-Value="@model.Password" />
+    </div>
+    <div class="row">
+        <button class="btn btn-primary gy-5 col-3" @onclick="Login_Api">@token.token</button>
+    </div>
+</EditForm>
+
+@code {
+
+
+    private BlogCredential model = new BlogCredential();
+    private TokenWrapper token = new TokenWrapper() {token = "Log In"};
+
+
+    private async void Login_Api()
+    {
+        await authenticationService.Login(model);
+        MessageService.SendMessage("render");
+        NavigationManager.NavigateTo("/");        
+    }
+
+}

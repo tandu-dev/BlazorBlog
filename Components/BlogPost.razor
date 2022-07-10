@@ -1,0 +1,55 @@
+@using BlazorBlog.Data.Model;
+
+@inject IAuthenticationService AuthenticationService
+@inject IApiService ApiService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+    
+    @if(thumbnail)
+    {
+        var postAddress = $"/post/{@post.Id}";
+        <h1><a href="@postAddress">@post.Title</a></h1>
+        <div class="container">
+            <div>@if(@post.Contents?.Length > 41){
+                @post.Contents.Substring(0,40) <a href="@postAddress">...more</a>
+            }
+            else{
+                @post.Contents
+            }
+            </div>
+        </div>
+        <p>@post.Timestamp, Category: @post.CategoryName</p>
+        <hr/>
+    }
+    else{
+        @if (@post is not null) {
+            
+            <h1>@post.Title</h1>
+            <p>@post.Contents</p>
+            <p>@post.Timestamp</p>
+            <p>@post.CategoryName</p>
+            @if(AuthenticationService.blogCredential != null){
+                <div class="btn-group" role="group">
+                    <button class="btn btn-danger" @onclick="DeletePost"><span class="oi oi-delete"></span>  Delete</button>
+                    <button class="btn btn-warning" @onclick="EditPost"><span class="oi oi-pencil"></span>  Edit</button>
+                </div>
+            }
+            <hr/>
+            <a href="/">Back to List</a>
+        }
+    }
+    @code{
+        [Parameter]
+        public Post post {get; set;}
+        [Parameter]
+        public bool thumbnail {get; set;} = false;
+        public async Task DeletePost(){
+            if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the Post '{post.Title}'?"))
+                return;
+            await ApiService.DeletePostAsync(post.Id.ToString());
+            NavigationManager.NavigateTo("/");
+        }
+        public void EditPost(){
+            NavigationManager.NavigateTo($"/editpost/{post.Id}");
+        }
+    }

@@ -1,0 +1,52 @@
+@using BlazorBlog.Data.Model;
+@using BlazorBlog.Data.Services;
+
+@inject IApiService apiService;
+
+@foreach(Post post in posts)
+{
+    <BlogPost Post=@post thumbnail=true />
+}
+<div class="container">
+<button @onclick="OldPosts" class="btn btn-primary btn-sm float-start">Older Posts</button>
+@if(PageNumber > 1){
+    <button @onclick="NewPosts" class="btn btn-success btn-sm float-end" >New Posts</button>
+}
+</div>
+
+@code{
+    [Parameter]
+    public int PageNumber {get; set;}
+    [Parameter]
+    public int PageSize {get; set;}
+    public IEnumerable<Post> posts = Array.Empty<Post>();
+    protected override async Task OnAfterRenderAsync(bool firstrender)
+    {
+        if(firstrender)
+        {
+            PageNumber = 1;
+            PageSize=3;
+            PageParameters pg = new BlazorBlog.Data.Model.PageParameters() {PageNumber = PageNumber, PageSize = PageSize};
+            posts = await apiService.GetPosts(pg);
+            StateHasChanged();
+        }
+    }
+    private async void OldPosts()
+    {
+        PageNumber += 1;
+        await LoadPosts(PageNumber, PageSize);
+    }
+    private async void NewPosts()
+    {
+        PageNumber-= 1;
+        await LoadPosts(PageNumber, PageSize);
+    }
+    private async Task LoadPosts(int pageNumber, int pageSize)
+    {
+        
+        PageParameters pg = new BlazorBlog.Data.Model.PageParameters() {PageNumber = PageNumber, PageSize = PageSize};
+        posts = await apiService.GetPosts(pg);
+        StateHasChanged();
+    }
+    
+}
