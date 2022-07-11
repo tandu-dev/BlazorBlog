@@ -1,11 +1,13 @@
-@page "deleteallposts"
-@inject IAPIService APIService
+@using BlazorBlog.Data.Services
+
+@page "/deleteallposts"
+@inject IApiService APIService
 @inject IMessageService MessageService
 
 @code {
     protected override async void OnInitialized()
     {
-        await APIService.DeletePostAsync(-1);
+        await APIService.DeletePostAsync("-1");
         MessageService.SendMessage("render");
     }
 }
