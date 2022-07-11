@@ -1,0 +1,11 @@
+@page "deleteallposts"
+@inject IAPIService APIService
+@inject IMessageService MessageService
+
+@code {
+    protected override async void OnInitialized()
+    {
+        await APIService.DeletePostAsync(-1);
+        MessageService.SendMessage("render");
+    }
+}
