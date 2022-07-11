@@ -4,7 +4,9 @@
 @using BlazorBlog.Data.Services;
 
 @inject IApiService apiService;
-<PageTitle>The Blazor Blog</PageTitle>
+@inject IConfiguration Config;
+
+<PageTitle>@Config["Title"]</PageTitle>
 
 <BlogPost thumbnail=false post=@post />
 

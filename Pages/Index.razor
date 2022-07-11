@@ -3,7 +3,9 @@
 
 @using BlazorBlog.Components;
 
-<PageTitle>The Blazor Blog</PageTitle>
+@inject IConfiguration Config;
+
+<PageTitle>@Config["Title"]</PageTitle>
 
 <BlogPostList PageNumber=@PageNumber PageSize=@PageSize />
 
